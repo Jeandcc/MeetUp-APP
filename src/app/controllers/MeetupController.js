@@ -32,7 +32,7 @@ class MeetupController {
       banner_path: req.file.filename,
     });
 
-    return res.status(200).json({ error: 'Meetup successfully created' });
+    return res.status(200).json({ message: 'Meetup successfully created' });
   }
 
   async update(req, res) {
@@ -82,6 +82,12 @@ class MeetupController {
           });
         }
       } else res.status(400).json({ error: "We couldn't find that meeting" });
+    });
+  }
+
+  async fetchMe(req, res) {
+    Meetup.findAll({}).then(result => {
+      res.send(result);
     });
   }
 }

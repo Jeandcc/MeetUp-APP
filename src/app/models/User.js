@@ -27,6 +27,12 @@ class User extends Model {
 
   static associate(models) {
     this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' });
+    this.belongsToMany(models.Meetup, {
+      through: 'user_meetings',
+      as: 'meetings',
+      foreignKey: 'userId',
+      otherKey: 'meetingId',
+    });
   }
 
   checkPassword(password) {

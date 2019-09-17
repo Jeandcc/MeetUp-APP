@@ -1,0 +1,22 @@
+import Sequelize, { Model } from 'sequelize';
+
+class Meetup extends Model {
+  static init(sequelize) {
+    super.init(
+      {
+        title: Sequelize.STRING,
+        description: Sequelize.STRING,
+        location: Sequelize.STRING,
+        date_and_time: Sequelize.DATE,
+        organizer: Sequelize.INTEGER,
+      },
+      {
+        sequelize,
+      }
+    );
+
+    return this;
+  }
+}
+
+export default Meetup;

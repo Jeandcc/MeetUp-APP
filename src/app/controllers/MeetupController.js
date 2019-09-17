@@ -11,7 +11,7 @@ class MeetupController {
       location: Yup.string().required(),
       date_and_time: Yup.date().required(),
     });
-    if (!(await schema.isValid(req.body))) {
+    if (!(await schema.isValid(req.body)) || !req.file) {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
@@ -29,6 +29,7 @@ class MeetupController {
       location: req.body.location,
       date_and_time: req.body.date_and_time,
       organizer: req.userId,
+      banner_path: req.file.filename,
     });
 
     return res.status(200).json({ error: 'Meetup successfully created' });

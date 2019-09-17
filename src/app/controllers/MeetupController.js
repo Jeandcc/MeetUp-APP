@@ -2,6 +2,8 @@ import * as Yup from 'yup';
 import { parseISO, isBefore } from 'date-fns';
 
 import Meetup from '../models/Meetup';
+import User from '../models/User';
+import UserMeetings from '../models/UserMeetings';
 
 class MeetupController {
   async store(req, res) {
@@ -85,10 +87,34 @@ class MeetupController {
     });
   }
 
-  async fetchMe(req, res) {
-    Meetup.findAll({}).then(result => {
+  async userMeetings(req, res) {
+    await Meetup.findAll({
+      include: [
+        {
+          model: User,
+          as: 'users',
+          required: false,
+          // Pass in the User's attributes that you want to retrieve
+          attributes: ['id', 'name'],
+          through: {
+            // This block of code allows you to retrieve the properties of the join table
+            model: UserMeetings,
+            as: 'userMeetings',
+            attributes: [],
+          },
+        },
+      ],
+      attributes: ['id', 'title', 'date_and_time', 'organizer', 'banner_path'],
+    })
+      .then(result => {
+        return res.json(result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    /*     await Meetup.findAll({}).then(result => {
       res.send(result);
-    });
+    }); */
   }
 }
 

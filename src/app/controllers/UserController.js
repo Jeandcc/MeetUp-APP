@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
 import User from '../models/User';
+import UserMeetings from '../models/UserMeetings';
 import File from '../models/File';
+import Meetup from '../models/Meetup';
 
 class UserController {
   async store(req, res) {
@@ -85,6 +87,45 @@ class UserController {
       email,
       avatar,
     });
+  }
+
+  async userMeetings(req, res) {
+    await User.findOne({
+      where: {
+        id: req.userId,
+      },
+      include: [
+        {
+          model: Meetup,
+          as: 'meetups',
+          required: false,
+          // Pass in the User's attributes that you want to retrieve
+          attributes: [
+            'id',
+            'title',
+            'date_and_time',
+            'organizer',
+            'banner_path',
+          ],
+          through: {
+            // This block of code allows you to retrieve the properties of the join table
+            model: UserMeetings,
+            as: 'userMeetings',
+            attributes: [],
+          },
+        },
+      ],
+      attributes: ['id', 'name'],
+    })
+      .then(result => {
+        return res.json(result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    /*     await Meetup.findAll({}).then(result => {
+      res.send(result);
+    }); */
   }
 }
 export default new UserController();

@@ -97,7 +97,7 @@ class UserController {
       include: [
         {
           model: Meetup,
-          as: 'meetups',
+          as: 'meetings',
           required: false,
           // Pass in the User's attributes that you want to retrieve
           attributes: [
@@ -123,9 +123,6 @@ class UserController {
       .catch(err => {
         console.log(err);
       });
-    /*     await Meetup.findAll({}).then(result => {
-      res.send(result);
-    }); */
   }
 }
 export default new UserController();

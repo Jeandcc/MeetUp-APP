@@ -1,4 +1,4 @@
-/* import Mail from '../../lib/Mail';
+import Mail from '../../lib/Mail';
 
 class SignUpMail {
   get key() {
@@ -6,18 +6,20 @@ class SignUpMail {
   }
 
   async handle({ data }) {
-    const { registration } = data;
+    const { organizer, meeting, infoOnUser } = data;
+    console.log('Queue was executed');
 
     await Mail.sendMail({
-      to: `${user.name}<${user.email}>`,
+      to: `${organizer.name} <${organizer.email}>`,
       subject: `New registration to ${meeting.title}`,
-      template: registration,
+      template: 'registration',
       context: {
-        provider: meeting.provider.name,
-        user: meeting.user.name,
+        organizer,
+        meeting,
+        infoOnUser,
       },
     });
   }
 }
 
-export default new SignUpMail(); */
+export default new SignUpMail();

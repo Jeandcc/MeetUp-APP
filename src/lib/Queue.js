@@ -1,4 +1,4 @@
-/* import Bee from 'bee-queue';
+import Bee from 'bee-queue';
 import SignUpMail from '../app/jobs/SignUpMail';
 import redisConfig from '../config/redis';
 
@@ -7,6 +7,7 @@ const jobs = [SignUpMail];
 class Queue {
   constructor() {
     this.queues = {};
+
     this.init();
   }
 
@@ -28,6 +29,7 @@ class Queue {
   processQueue() {
     jobs.forEach(job => {
       const { bee, handle } = this.queues[job.key];
+
       bee.on('failed', this.handleFailure).process(handle);
     });
   }
@@ -38,4 +40,3 @@ class Queue {
 }
 
 export default new Queue();
- */

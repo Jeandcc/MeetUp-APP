@@ -6,9 +6,8 @@ import Meetup from '../models/Meetup';
 import UserMeetings from '../models/UserMeetings';
 import User from '../models/User';
 
-/* import SignUpMail from '../jobs/SignUpMail';
-import Queue from '../../lib/Queue'; */
-import Mail from '../../lib/Mail';
+import SignUpMail from '../jobs/SignUpMail';
+import Queue from '../../lib/Queue';
 
 function makeReadable(object) {
   return JSON.parse(JSON.stringify(object));
@@ -111,20 +110,11 @@ class ParticipationController {
       userId: req.userId,
       meetingId,
     }).then(async createdMeeting => {
-      await Mail.sendMail({
-        to: `${organizer.name} <${organizer.email}>`,
-        subject: `New registration to ${meeting.title}`,
-        template: 'registration',
-        context: {
-          organizer,
-          meeting,
-          infoOnUser,
-        },
-      });
-      /*       const payload = 'PLACEHOLDER';
       await Queue.add(SignUpMail.key, {
-        payload,
-      }); */
+        organizer,
+        meeting,
+        infoOnUser,
+      });
       return res.status(200).json({
         message: 'You are now registered to this meeting',
         info: createdMeeting,

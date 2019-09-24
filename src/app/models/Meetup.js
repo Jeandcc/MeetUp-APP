@@ -8,7 +8,6 @@ class Meetup extends Model {
         description: Sequelize.STRING,
         location: Sequelize.STRING,
         date_and_time: Sequelize.DATE,
-        organizer: Sequelize.INTEGER,
         banner_path: Sequelize.STRING,
       },
       {
@@ -25,6 +24,10 @@ class Meetup extends Model {
       as: 'users',
       foreignKey: 'meetingId',
       otherKey: 'userId',
+    });
+    this.belongsTo(models.User, {
+      foreignKey: 'organizer_id',
+      as: 'organizer',
     });
   }
 }

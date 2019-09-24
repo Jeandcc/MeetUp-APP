@@ -1,7 +1,9 @@
 import * as Yup from 'yup';
-import { parseISO, isBefore } from 'date-fns';
+import { parseISO, isBefore, endOfDay, startOfDay } from 'date-fns';
+import { Op } from 'sequelize';
 
 import Meetup from '../models/Meetup';
+import User from '../models/User';
 
 class MeetupController {
   async store(req, res) {
@@ -28,7 +30,7 @@ class MeetupController {
       description: req.body.description,
       location: req.body.location,
       date_and_time: req.body.date_and_time,
-      organizer: req.userId,
+      organizer_id: req.userId,
       banner_path: req.file.filename,
     });
 
@@ -54,17 +56,6 @@ class MeetupController {
     });
   }
 
-  async index(req, res) {
-    await Meetup.findAll({
-      where: {
-        organizer: req.userId,
-      },
-    }).then(meetings => {
-      if (meetings.length > 0) res.status(200).json(meetings);
-      else res.status(400).json({ error: "You don't have any meetings" });
-    });
-  }
-
   async delete(req, res) {
     await Meetup.findByPk(req.params.meetingdId).then(meeting => {
       if (meeting) {
@@ -83,6 +74,57 @@ class MeetupController {
         }
       } else res.status(400).json({ error: "We couldn't find that meeting" });
     });
+  }
+
+  async index(req, res) {
+    const pagination = req.query.page ? req.query.page : 1;
+
+    if (req.query.date) {
+      const dateParam = parseISO(req.query.date);
+      const dateStart = startOfDay(dateParam);
+      const dateEnd = endOfDay(dateParam);
+
+      await Meetup.findAll({
+        where: {
+          date_and_time: {
+            [Op.between]: [dateStart, dateEnd],
+          },
+        },
+        offset: 10 * (pagination - 1),
+        limit: 10,
+        include: [
+          {
+            model: User,
+            as: 'organizer',
+            attributes: ['name', 'email'],
+          },
+        ],
+      })
+        .then(meetings => {
+          if (meetings.length > 0) return res.status(200).json(meetings);
+          return res.status(400).json({
+            error: 'No meetings found.',
+          });
+        })
+        .catch(err => {
+          return res.json({ error: `There was an error: ${err}` });
+        });
+    } else {
+      await Meetup.findAll({
+        include: [
+          {
+            model: User,
+            as: 'organizer',
+            attributes: ['name', 'email'],
+          },
+        ],
+        offset: 10 * (pagination - 1),
+        limit: 10,
+      }).then(meetings => {
+        if (meetings.length > 0) return res.status(200).json(meetings);
+        return res.status(400).json({ error: "You don't have any meetings" });
+      });
+    }
   }
 }
 

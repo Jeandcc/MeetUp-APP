@@ -7,6 +7,7 @@ import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
 import MeetupController from './app/controllers/MeetupController';
 import ParticipationController from './app/controllers/ParticipationController';
+import MeetupAdmin from './app/controllers/MeetupAdmin';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -22,13 +23,15 @@ routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
 
+routes.get('/meetups', MeetupController.index);
+
 routes.post('/meetups', upload.single('file'), MeetupController.store);
 routes.put('/meetups', MeetupController.update);
-routes.get('/meetups', MeetupController.index);
 routes.delete('/meetups/:meetingdId', MeetupController.delete);
+routes.get('/admin/meetups/', MeetupAdmin.index);
 
 routes.get('/meetups/signup/:mid', ParticipationController.register);
-routes.get('/mymeetups', UserController.userMeetings);
+routes.get('/mymeetups', ParticipationController.userMeetings);
 
 routes.post('/files', upload.single('file'), FileController.store);
 
